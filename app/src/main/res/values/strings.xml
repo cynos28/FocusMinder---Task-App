@@ -1,3 +1,15 @@
 <resources>
     <string name="app_name">FocusMinder</string>
+    <string name="welcome_bac">
+Welcome Back
+</string>
+    <string name="login_to_yo">
+login to your account
+</string>
+    <string name="log_in">
+log in
+</string>
+    <string name="forgot_pass">
+Forgot password?
+</string>
 </resources>
