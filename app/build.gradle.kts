@@ -33,6 +33,16 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+    sourceSets {
+        getByName("main") {
+            resources {
+                srcDirs("src\\main\\resources", "src\\main\\resources")
+            }
+            java {
+                srcDirs("src\\main\\java", "src\\main\\java\\2")
+            }
+        }
+    }
 }
 
 dependencies {
