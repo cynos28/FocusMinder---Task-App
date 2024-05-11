@@ -13,6 +13,12 @@
         android:theme="@style/Theme.FocusMinder"
         tools:targetApi="31">
         <activity
+            android:name=".CreateCard"
+            android:exported="false" />
+        <activity
+            android:name=".myDatabase"
+            android:exported="false" />
+        <activity
             android:name=".Login"
             android:exported="false" />
         <activity
