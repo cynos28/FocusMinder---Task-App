@@ -17,5 +17,11 @@ class Register : AppCompatActivity() {
             startActivity(intent)
         }
 
+        val navigateToregButton = findViewById<TextView>(R.id.RegisterBtn)
+        navigateToregButton.setOnClickListener { // Navigate to login page
+            val intent = Intent(this@Register, MainActivity::class.java)
+            startActivity(intent)
+        }
+
     }
 }
