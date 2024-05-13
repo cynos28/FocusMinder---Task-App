@@ -24,5 +24,8 @@
         <item name="android:letterSpacing">-0.03</item>
         <item name="android:textColor">#ACB3BF</item>
     </style>
-
+    <style name="RoundedFab" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">8sp</item>
+    </style>
 </resources>

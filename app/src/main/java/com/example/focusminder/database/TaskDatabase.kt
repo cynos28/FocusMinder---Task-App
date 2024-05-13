@@ -6,24 +6,28 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.example.focusminder.model.Task
 
-@Database(entities = [Task::class], version = 1)
-abstract class TaskDatabase : RoomDatabase() {
-    abstract fun getTaskDao(): TaskDao
 
-    companion object {
+@Database(entities = [Task::class], version = 1)
+abstract class TaskDatabase:RoomDatabase() {
+    abstract fun getTaskDao():TaskDao
+
+    companion object{
         @Volatile
-        private var instance: TaskDatabase? = null
+        private var instance:TaskDatabase?=null
         private val LOCK = Any()
 
-        @JvmStatic
-        operator fun invoke(context: Context): TaskDatabase = instance ?: synchronized(LOCK) {
-            instance ?: createDatabase(context).also { instance = it }
+        operator fun invoke(context: Context) = instance ?:
+        synchronized(LOCK){
+            instance ?:
+            createDatabase(context).also{
+                instance = it
+            }
         }
-
-        private fun createDatabase(context: Context) = Room.databaseBuilder(
-            context.applicationContext,
-            TaskDatabase::class.java,
-            "task_db"
-        ).build()
+        private fun createDatabase(context: Context)=
+            Room.databaseBuilder(
+                context.applicationContext,
+                TaskDatabase::class.java,
+                "task_db"
+            ).build()
     }
 }

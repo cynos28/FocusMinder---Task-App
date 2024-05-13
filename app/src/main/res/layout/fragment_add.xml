@@ -18,10 +18,10 @@
             android:layout_alignParentTop="true"
             android:layout_marginTop="16dp"
             android:fontFamily="@font/poppins"
-            android:text="Add Note."
-            android:textStyle="bold"
-            android:textColor="@color/red"
-            android:textSize="24sp" />
+            android:text="Add Task."
+            android:textColor="#153448"
+            android:textSize="24sp"
+            android:textStyle="bold" />
 
         <EditText
             android:id="@+id/addNoteTitle"
@@ -45,9 +45,12 @@
             android:padding="12dp"
             android:textSize="18sp"
             android:fontFamily="@font/poppins"
-            android:background="@drawable/pink_border"
+            android:backgroundTint="#FEFAF6"
             android:layout_below="@id/addNoteTitle"
-            android:layout_marginTop="12dp" />
+            android:layout_marginTop="12dp"
+            android:background="@drawable/text_box"
+            />
+
 
     </RelativeLayout>
 </layout>

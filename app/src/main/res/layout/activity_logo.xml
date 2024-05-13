@@ -9,8 +9,8 @@
 
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="292dp"
-        android:layout_height="414dp"
+        android:layout_width="406dp"
+        android:layout_height="695dp"
         android:src="@drawable/fmlogo"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

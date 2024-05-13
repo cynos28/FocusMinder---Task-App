@@ -1,60 +1,112 @@
 package com.example.focusminder.fragments
 
+import android.content.Context
 import android.os.Bundle
+import android.view.*
+import androidx.appcompat.widget.SearchView
+import androidx.core.view.MenuHost
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.findNavController
+import androidx.recyclerview.widget.GridLayoutManager
+import com.example.focusminder.MainActivity
 import com.example.focusminder.R
+import com.example.focusminder.adapter.TaskAdapter
+import com.example.focusminder.databinding.FragmentHomeBinding
+import com.example.focusminder.model.Task
+import com.example.focusminder.viewmodel.TaskViewModel
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
+class HomeFragment : Fragment(R.layout.fragment_home), SearchView.OnQueryTextListener, MenuProvider {
+    private var homeBinding: FragmentHomeBinding? = null
+    private val binding get() = homeBinding!!
+    private lateinit var taskViewModel: TaskViewModel
+    private lateinit var taskAdapter: TaskAdapter
 
-/**
- * A simple [Fragment] subclass.
- * Use the [HomeFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
-class HomeFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+    ): View? {
+        homeBinding = FragmentHomeBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        val menuHost: MenuHost = requireActivity()
+        menuHost.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
+        taskViewModel = (activity as MainActivity).taskViewModel
+        setupHomeRecyclerView()
+        binding.addNoteFab.setOnClickListener {
+            it.findNavController().navigate(R.id.action_homeFragment_to_addFragment)
+        }
+
+        // Get the registered user's name from shared preferences
+        val sharedPreferences = requireContext().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+        val userName = sharedPreferences.getString("name", "")
+
+        // Display the user's name in the toolbar
+        (activity as MainActivity).supportActionBar?.title = "Welcome, $userName"
+    }
+
+    private fun updateUI(task: List<Task>?) {
+        if (task != null) {
+            if (task.isNotEmpty()) {
+                binding.emptyNotesImage.visibility = View.GONE
+                binding.homeRecyclerView.visibility = View.VISIBLE
+            } else {
+                binding.emptyNotesImage.visibility = View.VISIBLE
+                binding.homeRecyclerView.visibility = View.GONE
+            }
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_home, container, false)
+    private fun setupHomeRecyclerView() {
+        taskAdapter = TaskAdapter()
+        binding.homeRecyclerView.apply {
+            layoutManager = GridLayoutManager(requireContext(), 2) // Set number of columns to 2
+            setHasFixedSize(true)
+            adapter = taskAdapter
+        }
+        activity?.let {
+            taskViewModel.getAllTask().observe(viewLifecycleOwner) { task ->
+                taskAdapter.differ.submitList(task)
+                updateUI(task)
+            }
+        }
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment HomeFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            HomeFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+    private fun searchTask(query: String?) {
+        val searchQuery = "%$query"
+        taskViewModel.searchTask(searchQuery).observe(this) { list ->
+            taskAdapter.differ.submitList(list)
+        }
+    }
+
+    override fun onQueryTextSubmit(query: String?): Boolean {
+        return false
+    }
+
+    override fun onQueryTextChange(newText: String?): Boolean {
+        if (newText != null) {
+            searchTask(newText)
+        }
+        return true
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        homeBinding = null
+    }
+
+    override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+        menu.clear()
+        menuInflater.inflate(R.menu.home_menu, menu)
+        val menuSearch = menu.findItem(R.id.searchMenu).actionView as SearchView
+        menuSearch.setOnQueryTextListener(this)
+    }
+
+    override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+        return false
     }
 }
